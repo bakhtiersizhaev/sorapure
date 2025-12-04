@@ -1,9 +1,13 @@
 {
   "version": 2,
   "rewrites": [
-    {
-      "source": "/download",
-      "destination": "/api/download"
+    { "source": "/download", "destination": "/api/download" },
+    { "source": "/api/download", "destination": "/api/download" }
+  ],
+  "functions": {
+    "api/download.js": {
+      "memory": 1024,
+      "maxDuration": 60
     }
-  ]
+  }
 }
