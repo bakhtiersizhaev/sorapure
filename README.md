@@ -1,52 +1,8 @@
-> [!CAUTION]
-> ## ⚠️ Service Discontinued (December 17, 2025)
-> 
-> **SoraPure no longer works.**
-> 
-> ### What happened?
-> OpenAI moved all Sora videos from public CDNs to protected **Azure Blob Storage** servers with new access rules:
-> 
-> | Account Type | Own Videos | Others' Videos |
-> |--------------|------------|----------------|
-> | **Free** | ❌ Watermark | ❌ Watermark |
-> | **Pro** | ✅ No watermark | ❌ Watermark |
-> 
-> The watermark-free version is **only available to paying subscribers downloading their own videos**.
-> 
-> ### How it works now (API response):
-> ```json
-> {
->   "post": {
->     "is_owner": true,  // ← Must be owner
->     "attachments": [{
->       "download_urls": {
->         "watermark": "https://videos.openai.com/...",
->         "no_watermark": "https://..."  // ← Only if is_owner: true AND paid subscription
->       }
->     }]
->   }
-> }
-> ```
-> 
-> For non-owners or free accounts:
-> ```json
-> "no_watermark": null  // ← Always null
-> ```
-> 
-> ### Technical details:
-> - Videos moved from `cdn.openai.com` → `videos.openai.com/az/files/`
-> - Server-side ownership + subscription verification
-> - Different file UUIDs for watermarked vs clean versions
-> - No public CDN with clean versions exists anymore
-> 
-> 
-> **Thank you to everyone who used SoraPure!** 🙏
-
----
-
-# SoraPure - Download Sora2 Videos Without Watermark
+# SoraPure - Download Sora2 Videos Without Watermark ✅ WORKING (Dec 17, 2025)
 
 Download OpenAI Sora2 videos without watermark.
+
+**Service Status:** 🚀 **Fully Restored**. We have addressed the recent connectivity and restriction issues. All features are working as expected.
 
 **Live:** [sorapure.vercel.app](https://sorapure.vercel.app)
 
