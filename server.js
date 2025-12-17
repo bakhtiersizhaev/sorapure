@@ -24,12 +24,13 @@ const DELOGO = { x: 'iw-160', y: 'ih-60', w: 150, h: 50 };
 
 // Endpoints (base64)
 const ENDPOINTS = {
+    CDN_DIRECT: 'aHR0cHM6Ly9vc2NkbjIuZHl5c3kuY29tL01QNC8=', // https://oscdn2.dyysy.com/MP4/
     CDN_PROXY: 'aHR0cHM6Ly9hcGkuc29yYWNkbi53b3JrZXJzLmRldi9kb3dubG9hZC1wcm94eT9pZD0=',
     SORA_API: 'aHR0cHM6Ly9zb3JhLmNoYXRncHQuY29tL2JhY2tlbmQvcHJvamVjdF95L3Bvc3Qv',
     OPENAI_CDN: 'aHR0cHM6Ly9jZG4ub3BlbmFpLmNvbS9NUDQv',
 };
 
-const Source = { NONE: -1, CDN_PROXY: 1, SORA_API: 2, OPENAI_CDN: 3 };
+const Source = { NONE: -1, CDN_DIRECT: 0, CDN_PROXY: 1, SORA_API: 2, OPENAI_CDN: 3 };
 
 const config = {
     bearerToken: process.env.SORA_BEARER_TOKEN || '',
@@ -52,7 +53,30 @@ function safeDelete(filePath) {
 }
 
 // Download strategies
+async function fromCdnDirect(videoId) {
+    console.log(`[DEBUG] Attempting CDN Direct (dyysy) for ${videoId}...`);
+    try {
+        const url = decode(ENDPOINTS.CDN_DIRECT) + videoId + '.mp4';
+        const res = await axios({
+            url: url,
+            method: 'GET',
+            responseType: 'stream',
+            timeout: REQUEST_TIMEOUT,
+            headers: { 'User-Agent': USER_AGENT },
+        });
+
+        if (res.status === 200 && res.headers['content-type']?.includes('video')) {
+            console.log(`[DEBUG] SUCCESS: CDN Direct found video`);
+            return res;
+        }
+    } catch (err) {
+        console.log(`[DEBUG] CDN Direct failed: ${err.message}`);
+    }
+    return null;
+}
+
 async function fromCdnProxy(videoId, requestId) {
+    console.log(`[DEBUG] Attempting CDN Proxy for ${videoId}...`);
     try {
         const res = await axios({
             url: decode(ENDPOINTS.CDN_PROXY) + videoId,
@@ -63,14 +87,21 @@ async function fromCdnProxy(videoId, requestId) {
         });
 
         if (res.status === 200 && res.headers['content-type']?.includes('video')) {
+            console.log(`[DEBUG] SUCCESS: CDN Proxy found video`);
             return res;
         }
-    } catch {}
+    } catch (err) {
+        console.log(`[DEBUG] CDN Proxy failed: ${err.message}`);
+    }
     return null;
 }
 
 async function fromSoraApi(videoId, token, cookies) {
-    if (!token) return null;
+    console.log(`[DEBUG] Attempting Sora API for ${videoId}...`);
+    if (!token) {
+        console.log('[DEBUG] Sora API skipped: No token provided');
+        return null;
+    }
 
     try {
         const headers = {
@@ -90,14 +121,23 @@ async function fromSoraApi(videoId, token, cookies) {
         });
 
         const att = api.data?.post?.attachments?.[0];
-        if (!att) return null;
+        if (!att) {
+            console.log('[DEBUG] Sora API: No attachments found in response');
+            return null;
+        }
 
         let videoUrl = att.download_urls?.no_watermark;
         let needsProcessing = false;
 
-        if (!videoUrl) {
+        if (videoUrl) {
+            console.log('[DEBUG] Sora API: Found NO_WATERMARK URL directly!');
+        } else {
+            console.log('[DEBUG] Sora API: No clean URL found. Looking for fallback...');
             videoUrl = att.downloadable_url || att.download_urls?.watermark || att.encodings?.source?.path;
-            needsProcessing = true;
+            if (videoUrl) {
+                console.log('[DEBUG] Sora API: Found fallback URL (likely watermarked)');
+                needsProcessing = true;
+            }
         }
 
         if (!videoUrl) return null;
@@ -111,11 +151,17 @@ async function fromSoraApi(videoId, token, cookies) {
         });
 
         return res.status === 200 ? { response: res, needsProcessing } : null;
-    } catch {}
+    } catch (err) {
+        console.log(`[DEBUG] Sora API failed: ${err.message}`);
+        if (err.response) {
+            console.log(`[DEBUG] API Error Details: status=${err.response.status}`);
+        }
+    }
     return null;
 }
 
 async function fromOpenAiCdn(videoId) {
+    console.log(`[DEBUG] Attempting OpenAI CDN (fallback) for ${videoId}...`);
     try {
         const res = await axios({
             url: decode(ENDPOINTS.OPENAI_CDN) + videoId + '.mp4',
@@ -124,8 +170,13 @@ async function fromOpenAiCdn(videoId) {
             timeout: API_TIMEOUT,
             headers: { 'User-Agent': USER_AGENT },
         });
-        return res.status === 200 ? res : null;
-    } catch {}
+        if (res.status === 200) {
+            console.log(`[DEBUG] SUCCESS: OpenAI CDN found video`);
+            return res;
+        }
+    } catch (err) {
+        console.log(`[DEBUG] OpenAI CDN failed: ${err.message}`);
+    }
     return null;
 }
 
@@ -140,6 +191,7 @@ async function saveStream(stream, outputPath) {
 }
 
 async function removeWatermark(input, output) {
+    console.log('[DEBUG] Starting watermark removal...');
     const filter = `delogo=x=${DELOGO.x}:y=${DELOGO.y}:w=${DELOGO.w}:h=${DELOGO.h}`;
     const cmd = `ffmpeg -i "${input}" -vf "${filter}" -c:a copy "${output}" -y`;
 
@@ -147,9 +199,11 @@ async function removeWatermark(input, output) {
         exec(cmd, { timeout: FFMPEG_TIMEOUT }, (err) => {
             safeDelete(input);
             if (err) {
+                console.log(`[DEBUG] FFMPEG failed: ${err.message}`);
                 safeDelete(output);
                 reject(new Error('Processing failed'));
             } else {
+                console.log('[DEBUG] Watermark removal success');
                 resolve();
             }
         });
@@ -185,6 +239,8 @@ async function handleDownload(req, res) {
         return res.status(400).json({ error: 'Invalid video URL or code' });
     }
 
+    console.log(`\n[DEBUG] --- New Download Request: ${videoId} ---`);
+
     const hash = generateHash(videoId, Date.now());
     const tmpDir = os.tmpdir();
     const inputPath = path.join(tmpDir, `${hash}_in.mp4`);
@@ -195,13 +251,21 @@ async function handleDownload(req, res) {
         let source = Source.NONE;
         let needsProcessing = false;
 
-        // Try CDN proxy first (no watermark)
-        stream = await fromCdnProxy(videoId, hash);
+        // 1. Try CDN Direct (dyysy)
+        stream = await fromCdnDirect(videoId);
         if (stream) {
-            source = Source.CDN_PROXY;
+            source = Source.CDN_DIRECT;
         }
 
-        // Try Sora API
+        // 2. Try CDN Proxy
+        if (!stream) {
+            stream = await fromCdnProxy(videoId, hash);
+            if (stream) {
+                source = Source.CDN_PROXY;
+            }
+        }
+
+        // 3. Try Sora API
         if (!stream) {
             const result = await fromSoraApi(videoId, token, cookies);
             if (result) {
@@ -211,16 +275,18 @@ async function handleDownload(req, res) {
             }
         }
 
-        // Try OpenAI CDN
+        // 4. Try OpenAI CDN
         if (!stream) {
             stream = await fromOpenAiCdn(videoId);
             if (stream) source = Source.OPENAI_CDN;
         }
 
         if (!stream) {
+            console.log('[DEBUG] All sources failed');
             return res.status(404).json({ error: 'Video source unavailable' });
         }
 
+        console.log(`[DEBUG] Downloading stream from source: ${Object.keys(Source).find(k => Source[k] === source)}`);
         await saveStream(stream, inputPath);
 
         let buffer;
@@ -241,7 +307,9 @@ async function handleDownload(req, res) {
             quality: 'HD',
             delogoApplied: needsProcessing,
         });
+        console.log('[DEBUG] Request completed successfully');
     } catch (err) {
+        console.log(`[DEBUG] Critical handler error: ${err.message}`);
         safeDelete(inputPath);
         safeDelete(outputPath);
         res.status(500).json({ error: err.message || 'Download failed' });
@@ -252,3 +320,4 @@ app.post('/download', handleDownload);
 app.post('/api/download', handleDownload);
 
 app.listen(PORT, () => console.log(`SoraPure running on port ${PORT}`));
+
