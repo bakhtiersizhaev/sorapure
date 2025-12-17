@@ -1,980 +1,1011 @@
 <!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>SoraPure 2026</title>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-            rel="stylesheet"
-        />
-        <style>
-            :root {
-                --bg-primary: #0a0f1a;
-                --bg-secondary: #0d1526;
-                --bg-card: rgba(15, 25, 45, 0.7);
-                --bg-glass: rgba(20, 35, 65, 0.4);
-                --accent: #38bdf8;
-                --accent-hover: #7dd3fc;
-                --accent-glow: rgba(56, 189, 248, 0.3);
-                --text-primary: #f8fafc;
-                --text-secondary: #94a3b8;
-                --text-muted: #64748b;
-                --border: rgba(148, 163, 184, 0.1);
-                --success: #4ade80;
-                --error: #f87171;
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SoraPure 2026</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0d1526;
+            --bg-card: rgba(15, 25, 45, 0.7);
+            --bg-glass: rgba(20, 35, 65, 0.4);
+            --accent: #38bdf8;
+            --accent-hover: #7dd3fc;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.1);
+            --success: #4ade80;
+            --error: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family:
+                'Inter',
+                -apple-system,
+                BlinkMacSystemFont,
+                sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Snowfall Animation */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1rem;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Gradient Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 1) 0%, var(--bg-primary) 100%);
+            z-index: 0;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.2),
+                0 2px 4px -2px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+
+        .lang-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: linear-gradient(135deg, var(--bg-secondary), rgba(13, 21, 38, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 32px 8px 12px;
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .lang-select:hover {
+            border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .lang-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .lang-select option {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 8px;
+        }
+
+        /* Logo & Header */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 24px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
             }
 
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
+            100% {
+                transform: translateX(100%) rotate(45deg);
             }
+        }
 
-            html {
-                font-size: 16px;
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-text {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .year-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.1));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 24px;
+            font-size: 0.8125rem;
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.01em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input {
+            width: 100%;
+            padding: 14px 16px;
+            padding-left: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 20px;
+            height: 20px;
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--accent), #0ea5e9);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Status */
+        .status {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .status.success {
+            color: var(--success);
+            border-color: rgba(74, 222, 128, 0.2);
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .status.error {
+            color: var(--error);
+            border-color: rgba(248, 113, 113, 0.2);
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        /* Video Preview */
+        .preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview.visible {
+            display: block;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            max-height: 240px;
+            object-fit: contain;
+            display: block;
+            background: #000;
+        }
+
+        /* Download Button */
+        .download-btn {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--success);
+            border-radius: 10px;
+            color: var(--success);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .download-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-text {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+            margin-bottom: 12px;
+        }
+
+        .footer-credits {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .footer-dev {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+        }
+
+        .footer-dev a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .footer-dev a:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.6875rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .footer-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .footer-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .footer-date {
+            font-size: 0.625rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        /* Pixel decoration */
+        .pixel-corner {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+
+        .pixel-corner.tl {
+            top: 8px;
+            left: 8px;
+        }
+
+        .pixel-corner.tr {
+            top: 8px;
+            right: 8px;
+        }
+
+        .pixel-corner.bl {
+            bottom: 8px;
+            left: 8px;
+        }
+
+        .pixel-corner.br {
+            bottom: 8px;
+            right: 8px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
             }
+        }
 
-            body {
-                font-family:
-                    'Inter',
-                    -apple-system,
-                    BlinkMacSystemFont,
-                    sans-serif;
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                min-height: 100vh;
-                overflow-x: hidden;
-                position: relative;
-            }
-
-            /* Snowfall Animation */
-            .snowflakes {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 0;
-                overflow: hidden;
-            }
-
-            .snowflake {
-                position: absolute;
-                top: -10px;
-                color: rgba(255, 255, 255, 0.4);
-                font-size: 1rem;
-                animation: fall linear infinite;
-                text-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
-            }
-
-            @keyframes fall {
-                to {
-                    transform: translateY(100vh) rotate(360deg);
-                }
-            }
-
-            /* Gradient Background */
-            .bg-gradient {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background:
-                    radial-gradient(ellipse at 20% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-                    radial-gradient(ellipse at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
-                    radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 1) 0%, var(--bg-primary) 100%);
-                z-index: 0;
-            }
-
-            /* Main Container */
+        /* Responsive */
+        @media (max-width: 480px) {
             .container {
-                position: relative;
-                z-index: 1;
-                max-width: 520px;
-                margin: 0 auto;
-                padding: 24px 16px;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
+                padding: 16px 12px;
             }
 
-            /* Card */
             .card {
-                background: var(--bg-card);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border: 1px solid var(--border);
-                border-radius: 24px;
-                padding: 32px 24px;
-                box-shadow:
-                    0 4px 6px -1px rgba(0, 0, 0, 0.2),
-                    0 2px 4px -2px rgba(0, 0, 0, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            }
-
-            /* Language Switcher */
-            .lang-switcher {
-                position: absolute;
-                top: 16px;
-                right: 16px;
-                z-index: 10;
-            }
-
-            .lang-select {
-                appearance: none;
-                -webkit-appearance: none;
-                background: linear-gradient(135deg, var(--bg-secondary), rgba(13, 21, 38, 0.9));
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                padding: 8px 32px 8px 12px;
-                color: var(--text-primary);
-                font-size: 0.8125rem;
-                font-family: inherit;
-                cursor: pointer;
-                outline: none;
-                transition: all 0.2s ease;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 10px center;
-            }
-
-            .lang-select:hover {
-                border-color: var(--accent);
-                background-color: rgba(56, 189, 248, 0.05);
-            }
-
-            .lang-select:focus {
-                border-color: var(--accent);
-                box-shadow: 0 0 0 3px var(--accent-glow);
-            }
-
-            .lang-select option {
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                padding: 8px;
-            }
-
-            /* Logo & Header */
-            .header {
-                text-align: center;
-                margin-bottom: 32px;
-            }
-
-            .logo {
-                display: inline-flex;
-                align-items: center;
-                gap: 12px;
-                margin-bottom: 8px;
-            }
-
-            .logo-icon {
-                width: 48px;
-                height: 48px;
-                background: linear-gradient(135deg, var(--accent), #0ea5e9);
-                border-radius: 14px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 0 24px var(--accent-glow);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .logo-icon::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-                animation: shine 3s infinite;
-            }
-
-            @keyframes shine {
-                0% {
-                    transform: translateX(-100%) rotate(45deg);
-                }
-                100% {
-                    transform: translateX(100%) rotate(45deg);
-                }
-            }
-
-            .logo-icon svg {
-                width: 28px;
-                height: 28px;
-                color: white;
-                position: relative;
-                z-index: 1;
+                padding: 24px 16px;
             }
 
             .logo-text {
-                font-size: 1.75rem;
-                font-weight: 600;
-                letter-spacing: -0.02em;
-                background: linear-gradient(135deg, var(--text-primary), var(--accent));
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                font-size: 1.375rem;
             }
 
-            .tagline {
-                font-size: 0.875rem;
-                color: var(--text-secondary);
-                font-weight: 400;
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
             }
 
-            .year-badge {
-                display: inline-block;
-                margin-top: 16px;
-                padding: 8px 16px;
-                background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.1));
-                border: 1px solid rgba(56, 189, 248, 0.3);
-                border-radius: 24px;
-                font-size: 0.8125rem;
-                color: var(--accent);
-                font-weight: 500;
-                letter-spacing: 0.02em;
-                text-shadow: 0 0 10px var(--accent-glow);
-            }
-
-            /* Form */
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            .label {
-                display: block;
-                font-size: 0.8125rem;
-                font-weight: 500;
-                color: var(--text-secondary);
-                margin-bottom: 8px;
-                letter-spacing: 0.01em;
-            }
-
-            .input-wrapper {
-                position: relative;
+            .logo-icon svg {
+                width: 24px;
+                height: 24px;
             }
 
             .input {
-                width: 100%;
-                padding: 14px 16px;
-                padding-left: 44px;
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
-                border-radius: 12px;
-                color: var(--text-primary);
-                font-size: 0.9375rem;
-                font-family: 'JetBrains Mono', monospace;
-                transition: all 0.2s ease;
-                outline: none;
+                padding: 12px 14px;
+                padding-left: 40px;
+                font-size: 0.875rem;
             }
 
-            .input::placeholder {
-                color: var(--text-muted);
-            }
-
-            .input:focus {
-                border-color: var(--accent);
-                box-shadow: 0 0 0 3px var(--accent-glow);
-            }
-
-            .input-icon {
-                position: absolute;
-                left: 14px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: var(--text-muted);
-                width: 20px;
-                height: 20px;
-            }
-
-            .hint {
-                font-size: 0.75rem;
-                color: var(--text-muted);
-                margin-top: 8px;
-            }
-
-            /* Button */
             .btn {
-                width: 100%;
-                padding: 14px 24px;
-                background: linear-gradient(135deg, var(--accent), #0ea5e9);
-                border: none;
-                border-radius: 12px;
-                color: var(--bg-primary);
-                font-size: 0.9375rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                box-shadow: 0 4px 14px var(--accent-glow);
-            }
-
-            .btn:hover:not(:disabled) {
-                transform: translateY(-1px);
-                box-shadow: 0 6px 20px var(--accent-glow);
-            }
-
-            .btn:active:not(:disabled) {
-                transform: translateY(0);
-            }
-
-            .btn:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-            .btn svg {
-                width: 18px;
-                height: 18px;
-            }
-
-            /* Status */
-            .status {
-                margin-top: 20px;
-                padding: 12px 16px;
-                background: var(--bg-secondary);
-                border-radius: 10px;
-                font-size: 0.8125rem;
-                color: var(--text-secondary);
-                text-align: center;
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid var(--border);
-            }
-
-            .status.success {
-                color: var(--success);
-                border-color: rgba(74, 222, 128, 0.2);
-                background: rgba(74, 222, 128, 0.05);
-            }
-
-            .status.error {
-                color: var(--error);
-                border-color: rgba(248, 113, 113, 0.2);
-                background: rgba(248, 113, 113, 0.05);
-            }
-
-            /* Video Preview */
-            .preview {
-                margin-top: 20px;
-                display: none;
-            }
-
-            .preview.visible {
-                display: block;
-            }
-
-            .video-wrapper {
-                position: relative;
-                border-radius: 12px;
-                overflow: hidden;
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
+                padding: 12px 20px;
             }
 
             .video-wrapper video {
-                width: 100%;
-                max-height: 240px;
-                object-fit: contain;
-                display: block;
-                background: #000;
+                max-height: 180px;
             }
 
-            /* Download Button */
-            .download-btn {
-                display: none;
-                margin-top: 12px;
-                padding: 12px 20px;
-                background: var(--bg-secondary);
-                border: 1px solid var(--success);
-                border-radius: 10px;
-                color: var(--success);
-                font-size: 0.875rem;
-                font-weight: 500;
-                text-decoration: none;
-                text-align: center;
-                transition: all 0.2s ease;
-            }
-
-            .download-btn.visible {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .download-btn:hover {
-                background: rgba(74, 222, 128, 0.1);
-            }
-
-            .download-btn svg {
-                width: 16px;
-                height: 16px;
-            }
-
-            /* Footer */
-            .footer {
-                text-align: center;
-                margin-top: 24px;
-                padding-top: 20px;
-                border-top: 1px solid var(--border);
-            }
-
-            .footer-text {
-                font-size: 0.6875rem;
-                color: var(--text-muted);
-                letter-spacing: 0.02em;
-                margin-bottom: 12px;
-            }
-
-            .footer-credits {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .footer-dev {
-                font-size: 0.6875rem;
-                color: var(--text-muted);
-            }
-
-            .footer-dev a {
-                color: var(--accent);
-                text-decoration: none;
-                transition: all 0.2s;
-            }
-
-            .footer-dev a:hover {
-                color: var(--accent-hover);
-                text-shadow: 0 0 8px var(--accent-glow);
-            }
-
-            .footer-links {
-                display: flex;
-                gap: 12px;
-                align-items: center;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .footer-link {
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
+            .year-badge {
+                font-size: 0.75rem;
                 padding: 6px 12px;
-                background: var(--bg-secondary);
-                border: 1px solid var(--border);
-                border-radius: 8px;
-                color: var(--text-secondary);
-                font-size: 0.6875rem;
-                text-decoration: none;
-                transition: all 0.2s;
             }
 
-            .footer-link:hover {
-                border-color: var(--accent);
-                color: var(--accent);
-                background: rgba(56, 189, 248, 0.05);
+            .lang-switcher {
+                top: 12px;
+                right: 12px;
             }
 
-            .footer-link svg {
-                width: 14px;
-                height: 14px;
+            .lang-btn {
+                width: 28px;
+                height: 20px;
+                font-size: 12px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px 24px;
             }
 
-            .footer-date {
-                font-size: 0.625rem;
-                color: var(--text-muted);
-                opacity: 0.7;
-                margin-top: 4px;
+            .card {
+                padding: 40px 32px;
             }
+        }
 
-            /* Pixel decoration */
-            .pixel-corner {
-                position: absolute;
-                width: 6px;
-                height: 6px;
-                background: var(--accent);
-                opacity: 0.5;
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 480px;
             }
+        }
+    </style>
+</head>
 
-            .pixel-corner.tl {
-                top: 8px;
-                left: 8px;
-            }
-            .pixel-corner.tr {
-                top: 8px;
-                right: 8px;
-            }
-            .pixel-corner.bl {
-                bottom: 8px;
-                left: 8px;
-            }
-            .pixel-corner.br {
-                bottom: 8px;
-                right: 8px;
-            }
+<body>
+    <!-- Background -->
+    <div class="bg-gradient"></div>
 
-            /* Loading spinner */
-            .spinner {
-                width: 16px;
-                height: 16px;
-                border: 2px solid transparent;
-                border-top-color: currentColor;
-                border-radius: 50%;
-                animation: spin 0.8s linear infinite;
-            }
+    <!-- Snowfall -->
+    <div class="snowflakes" id="snowflakes"></div>
 
-            @keyframes spin {
-                to {
-                    transform: rotate(360deg);
-                }
-            }
+    <!-- Deprecation Banner -->
+    <div id="deprecationBanner" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            border-bottom: 3px solid #e94560;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        ">
+        <h2 style="margin: 0 0 12px 0; color: #e94560; font-size: 1.25rem;" data-i18n="banner_title">⚠️ Сервис больше не
+            работает</h2>
+        <p style="margin: 0 0 12px 0; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.9rem; line-height: 1.5;"
+            data-i18n="banner_desc">
+            OpenAI перенесли видео Sora на защищённые серверы Azure с новыми правилами:
+        </p>
+        <div
+            style="display: inline-block; text-align: left; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 8px; margin-bottom: 12px;">
+            <p style="margin: 4px 0; font-size: 0.85rem;" data-i18n="banner_rule1">❌ Бесплатные аккаунты → все видео с
+                водяным знаком</p>
+            <p style="margin: 4px 0; font-size: 0.85rem;" data-i18n="banner_rule2">✅ Pro → без водяного знака, но
+                <strong>только свои видео</strong></p>
+        </div>
+        <p style="margin: 0; opacity: 0.6; font-size: 0.75rem;" data-i18n="banner_date">Декабрь 2025</p>
+    </div>
 
-            /* Responsive */
-            @media (max-width: 480px) {
-                .container {
-                    padding: 16px 12px;
-                }
+    <!-- Main Content -->
+    <div class="container" style="padding-top: 180px;">
+        <div class="card" style="position: relative">
+            <!-- Pixel corners -->
+            <div class="pixel-corner tl"></div>
+            <div class="pixel-corner tr"></div>
+            <div class="pixel-corner bl"></div>
+            <div class="pixel-corner br"></div>
 
-                .card {
-                    padding: 24px 16px;
-                }
+            <!-- Language Switcher -->
+            <div class="lang-switcher">
+                <select class="lang-select" id="langSelect">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                    <option value="zh">中文</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
 
-                .logo-text {
-                    font-size: 1.375rem;
-                }
-
-                .logo-icon {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 12px;
-                }
-
-                .logo-icon svg {
-                    width: 24px;
-                    height: 24px;
-                }
-
-                .input {
-                    padding: 12px 14px;
-                    padding-left: 40px;
-                    font-size: 0.875rem;
-                }
-
-                .btn {
-                    padding: 12px 20px;
-                }
-
-                .video-wrapper video {
-                    max-height: 180px;
-                }
-
-                .year-badge {
-                    font-size: 0.75rem;
-                    padding: 6px 12px;
-                }
-
-                .lang-switcher {
-                    top: 12px;
-                    right: 12px;
-                }
-
-                .lang-btn {
-                    width: 28px;
-                    height: 20px;
-                    font-size: 12px;
-                }
-            }
-
-            @media (min-width: 768px) {
-                .container {
-                    padding: 40px 24px;
-                }
-
-                .card {
-                    padding: 40px 32px;
-                }
-            }
-
-            @media (min-width: 1024px) {
-                .container {
-                    max-width: 480px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Background -->
-        <div class="bg-gradient"></div>
-
-        <!-- Snowfall -->
-        <div class="snowflakes" id="snowflakes"></div>
-
-        <!-- Main Content -->
-        <div class="container">
-            <div class="card" style="position: relative">
-                <!-- Pixel corners -->
-                <div class="pixel-corner tl"></div>
-                <div class="pixel-corner tr"></div>
-                <div class="pixel-corner bl"></div>
-                <div class="pixel-corner br"></div>
-
-                <!-- Language Switcher -->
-                <div class="lang-switcher">
-                    <select class="lang-select" id="langSelect">
-                        <option value="ru">Русский</option>
-                        <option value="en">English</option>
-                        <option value="zh">中文</option>
-                        <option value="es">Español</option>
-                    </select>
-                </div>
-
-                <!-- Header -->
-                <div class="header">
-                    <div class="logo">
-                        <div class="logo-icon">
-                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                                />
-                            </svg>
-                        </div>
-                        <span class="logo-text">SoraPure</span>
-                    </div>
-                    <p class="tagline" data-i18n="tagline">Скачивайте видео Sora2 без водяного знака</p>
-                    <div class="year-badge" data-i18n="newyear">С наступающим 2026 годом!</div>
-                </div>
-
-                <!-- Form -->
-                <div class="form-group">
-                    <label class="label" data-i18n="label">URL или код видео</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                            />
-                        </svg>
-                        <input
-                            type="text"
-                            id="url"
-                            class="input"
-                            data-i18n-placeholder="placeholder"
-                            placeholder="sora.chatgpt.com/p/s_xxx или s_xxx"
-                            autocomplete="off"
-                            spellcheck="false"
-                        />
-                    </div>
-                    <p class="hint" data-i18n="hint">Вставьте URL видео Sora2 или код видео (s_xxxxx)</p>
-                </div>
-
-                <button id="go" class="btn">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                    </svg>
-                    <span data-i18n="download">Скачать HD</span>
-                </button>
-
-                <!-- Status -->
-                <div id="log" class="status" data-i18n="ready">Готов к скачиванию</div>
-
-                <!-- Preview -->
-                <div id="preview" class="preview">
-                    <div class="video-wrapper">
-                        <video id="player" controls></video>
-                    </div>
-                    <a id="downloadLink" class="download-btn" download>
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                         </svg>
-                        <span data-i18n="save">Сохранить на устройство</span>
-                    </a>
-                </div>
-
-                <!-- Footer -->
-                <div class="footer">
-                    <p class="footer-text" data-i18n="footer">Скачивание без водяного знака</p>
-
-                    <div class="footer-credits">
-                        <p class="footer-dev">
-                            <span data-i18n="developed_by">Разработал</span>
-                            <a href="https://t.me/bakhtier_sizhaev" target="_blank" rel="noopener">Бахтиер Сижаев</a>
-                            <span style="opacity: 0.5">(AI2KEY)</span>
-                        </p>
-
-                        <div class="footer-links">
-                            <a href="https://t.me/bakhtier_sizhaev" target="_blank" rel="noopener" class="footer-link">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
-                                    />
-                                </svg>
-                                <span data-i18n="channel">Канал</span>
-                            </a>
-                            <a
-                                href="https://t.me/sorapure_bot"
-                                target="_blank"
-                                rel="noopener"
-                                class="footer-link"
-                            >
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path
-                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                                    />
-                                </svg>
-                                <span data-i18n="bot">Бот</span>
-                            </a>
-                        </div>
-
-                        <p class="footer-date">Декабрь 2025</p>
                     </div>
+                    <span class="logo-text">SoraPure</span>
+                </div>
+                <p class="tagline" data-i18n="tagline">Скачивайте видео Sora2 без водяного знака</p>
+                <div class="year-badge" data-i18n="newyear">С наступающим 2026 годом!</div>
+            </div>
+
+            <!-- Form -->
+            <div class="form-group">
+                <label class="label" data-i18n="label">URL или код видео</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <input type="text" id="url" class="input" data-i18n-placeholder="placeholder"
+                        placeholder="sora.chatgpt.com/p/s_xxx или s_xxx" autocomplete="off" spellcheck="false" />
+                </div>
+                <p class="hint" data-i18n="hint">Вставьте URL видео Sora2 или код видео (s_xxxxx)</p>
+            </div>
+
+            <button id="go" class="btn">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span data-i18n="download">Скачать HD</span>
+            </button>
+
+            <!-- Status -->
+            <div id="log" class="status" data-i18n="ready">Готов к скачиванию</div>
+
+            <!-- Preview -->
+            <div id="preview" class="preview">
+                <div class="video-wrapper">
+                    <video id="player" controls></video>
+                </div>
+                <a id="downloadLink" class="download-btn" download>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span data-i18n="save">Сохранить на устройство</span>
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p class="footer-text" data-i18n="footer">Скачивание без водяного знака</p>
+
+                <div class="footer-credits">
+                    <p class="footer-dev">
+                        <span data-i18n="developed_by">Разработал</span>
+                        <a href="https://t.me/bakhtier_sizhaev" target="_blank" rel="noopener">Бахтиер Сижаев</a>
+                        <span style="opacity: 0.5">(AI2KEY)</span>
+                    </p>
+
+                    <div class="footer-links">
+                        <a href="https://t.me/bakhtier_sizhaev" target="_blank" rel="noopener" class="footer-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                            </svg>
+                            <span data-i18n="channel">Канал</span>
+                        </a>
+                        <a href="https://t.me/sorapure_bot" target="_blank" rel="noopener" class="footer-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                            <span data-i18n="bot">Бот</span>
+                        </a>
+                    </div>
+
+                    <p class="footer-date">Декабрь 2025</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            // Localization
-            const i18n = {
-                ru: {
-                    tagline: 'Скачивайте видео Sora2 без водяного знака',
-                    newyear: 'С наступающим 2026 годом!',
-                    label: 'URL или код видео',
-                    placeholder: 'sora.chatgpt.com/p/s_xxx или s_xxx',
-                    hint: 'Вставьте URL видео Sora2 или код видео (s_xxxxx)',
-                    download: 'Скачать HD',
-                    ready: 'Готов к скачиванию',
-                    downloading: 'Скачивание HD...',
-                    processing: 'Обработка...',
-                    save: 'Сохранить на устройство',
-                    footer: 'Скачивание без водяного знака',
-                    error_url: 'Введите URL видео',
-                    error_network: 'Ошибка сети',
-                    no_watermark: 'без водяного знака',
-                    watermark_removed: 'водяной знак удалён',
-                    developed_by: 'Разработал',
-                    channel: 'Канал',
-                    bot: 'Бот',
-                },
-                en: {
-                    tagline: 'Download Sora2 videos without watermark',
-                    newyear: 'Happy New Year 2026!',
-                    label: 'Video URL or Code',
-                    placeholder: 'sora.chatgpt.com/p/s_xxx or s_xxx',
-                    hint: 'Paste Sora2 video URL or video code (s_xxxxx)',
-                    download: 'Download HD',
-                    ready: 'Ready to download',
-                    downloading: 'Downloading HD...',
-                    processing: 'Processing...',
-                    save: 'Save to device',
-                    footer: 'Watermark-free download',
-                    error_url: 'Please enter video URL',
-                    error_network: 'Network error',
-                    no_watermark: 'no watermark',
-                    watermark_removed: 'watermark removed',
-                    developed_by: 'Developed by',
-                    channel: 'Channel',
-                    bot: 'Bot',
-                },
-                zh: {
-                    tagline: '下载无水印的Sora2视频',
-                    newyear: '2026新年快乐！',
-                    label: '视频链接或代码',
-                    placeholder: 'sora.chatgpt.com/p/s_xxx 或 s_xxx',
-                    hint: '粘贴Sora2视频链接或视频代码 (s_xxxxx)',
-                    download: '下载高清',
-                    ready: '准备下载',
-                    downloading: '正在下载高清...',
-                    processing: '处理中...',
-                    save: '保存到设备',
-                    footer: '无水印下载',
-                    error_url: '请输入视频链接',
-                    error_network: '网络错误',
-                    no_watermark: '无水印',
-                    watermark_removed: '水印已移除',
-                    developed_by: '开发者',
-                    channel: '频道',
-                    bot: '机器人',
-                },
-                es: {
-                    tagline: 'Descarga videos de Sora2 sin marca de agua',
-                    newyear: '¡Feliz Año Nuevo 2026!',
-                    label: 'URL o código del video',
-                    placeholder: 'sora.chatgpt.com/p/s_xxx o s_xxx',
-                    hint: 'Pega la URL del video Sora2 o el código (s_xxxxx)',
-                    download: 'Descargar HD',
-                    ready: 'Listo para descargar',
-                    downloading: 'Descargando HD...',
-                    processing: 'Procesando...',
-                    save: 'Guardar en dispositivo',
-                    footer: 'Descarga sin marca de agua',
-                    error_url: 'Ingresa la URL del video',
-                    error_network: 'Error de red',
-                    no_watermark: 'sin marca de agua',
-                    watermark_removed: 'marca de agua eliminada',
-                    developed_by: 'Desarrollado por',
-                    channel: 'Canal',
-                    bot: 'Bot',
-                },
-            };
+    <script>
+        // Localization
+        const i18n = {
+            ru: {
+                tagline: 'Скачивайте видео Sora2 без водяного знака',
+                newyear: 'С наступающим 2026 годом!',
+                label: 'URL или код видео',
+                placeholder: 'sora.chatgpt.com/p/s_xxx или s_xxx',
+                hint: 'Вставьте URL видео Sora2 или код видео (s_xxxxx)',
+                download: 'Скачать HD',
+                ready: 'Готов к скачиванию',
+                downloading: 'Скачивание HD...',
+                processing: 'Обработка...',
+                save: 'Сохранить на устройство',
+                footer: 'Скачивание без водяного знака',
+                error_url: 'Введите URL видео',
+                error_network: 'Ошибка сети',
+                no_watermark: 'без водяного знака',
+                watermark_removed: 'водяной знак удалён',
+                developed_by: 'Разработал',
+                channel: 'Канал',
+                bot: 'Бот',
+                banner_title: '⚠️ Сервис больше не работает',
+                banner_desc: 'OpenAI перенесли видео Sora на защищённые серверы Azure с новыми правилами:',
+                banner_rule1: '❌ Бесплатные аккаунты → все видео с водяным знаком',
+                banner_rule2: '✅ Pro → без водяного знака, но только свои видео',
+                banner_date: 'Декабрь 2025',
+            },
+            en: {
+                tagline: 'Download Sora2 videos without watermark',
+                newyear: 'Happy New Year 2026!',
+                label: 'Video URL or Code',
+                placeholder: 'sora.chatgpt.com/p/s_xxx or s_xxx',
+                hint: 'Paste Sora2 video URL or video code (s_xxxxx)',
+                download: 'Download HD',
+                ready: 'Ready to download',
+                downloading: 'Downloading HD...',
+                processing: 'Processing...',
+                save: 'Save to device',
+                footer: 'Watermark-free download',
+                error_url: 'Please enter video URL',
+                error_network: 'Network error',
+                no_watermark: 'no watermark',
+                watermark_removed: 'watermark removed',
+                developed_by: 'Developed by',
+                channel: 'Channel',
+                bot: 'Bot',
+                banner_title: '⚠️ Service No Longer Available',
+                banner_desc: 'OpenAI moved Sora videos to protected Azure servers with new rules:',
+                banner_rule1: '❌ Free accounts → all videos have watermark',
+                banner_rule2: '✅ Pro → no watermark, but only your own videos',
+                banner_date: 'December 2025',
+            },
+            zh: {
+                tagline: '下载无水印的Sora2视频',
+                newyear: '2026新年快乐！',
+                label: '视频链接或代码',
+                placeholder: 'sora.chatgpt.com/p/s_xxx 或 s_xxx',
+                hint: '粘贴Sora2视频链接或视频代码 (s_xxxxx)',
+                download: '下载高清',
+                ready: '准备下载',
+                downloading: '正在下载高清...',
+                processing: '处理中...',
+                save: '保存到设备',
+                footer: '无水印下载',
+                error_url: '请输入视频链接',
+                error_network: '网络错误',
+                no_watermark: '无水印',
+                watermark_removed: '水印已移除',
+                developed_by: '开发者',
+                channel: '频道',
+                bot: '机器人',
+                banner_title: '⚠️ 服务已停止',
+                banner_desc: 'OpenAI 将 Sora 视频迁移到受保护的 Azure 服务器，新规则如下：',
+                banner_rule1: '❌ 免费账户 → 所有视频都有水印',
+                banner_rule2: '✅ Pro → 无水印，但仅限自己的视频',
+                banner_date: '2025年12月',
+            },
+            es: {
+                tagline: 'Descarga videos de Sora2 sin marca de agua',
+                newyear: '¡Feliz Año Nuevo 2026!',
+                label: 'URL o código del video',
+                placeholder: 'sora.chatgpt.com/p/s_xxx o s_xxx',
+                hint: 'Pega la URL del video Sora2 o el código (s_xxxxx)',
+                download: 'Descargar HD',
+                ready: 'Listo para descargar',
+                downloading: 'Descargando HD...',
+                processing: 'Procesando...',
+                save: 'Guardar en dispositivo',
+                footer: 'Descarga sin marca de agua',
+                error_url: 'Ingresa la URL del video',
+                error_network: 'Error de red',
+                no_watermark: 'sin marca de agua',
+                watermark_removed: 'marca de agua eliminada',
+                developed_by: 'Desarrollado por',
+                channel: 'Canal',
+                bot: 'Bot',
+                banner_title: '⚠️ Servicio No Disponible',
+                banner_desc: 'OpenAI movió los videos de Sora a servidores Azure protegidos con nuevas reglas:',
+                banner_rule1: '❌ Cuentas gratuitas → todos los videos con marca de agua',
+                banner_rule2: '✅ Pro → sin marca de agua, pero solo tus propios videos',
+                banner_date: 'Diciembre 2025',
+            },
+        };
 
-            let currentLang = localStorage.getItem('sora_lang') || 'ru';
+        let currentLang = localStorage.getItem('sora_lang') || 'ru';
 
-            function t(key) {
-                return i18n[currentLang]?.[key] || i18n.en[key] || key;
-            }
+        function t(key) {
+            return i18n[currentLang]?.[key] || i18n.en[key] || key;
+        }
 
-            function updateLanguage(lang) {
-                currentLang = lang;
-                localStorage.setItem('sora_lang', lang);
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('sora_lang', lang);
 
-                // Update all elements with data-i18n
-                document.querySelectorAll('[data-i18n]').forEach((el) => {
-                    const key = el.getAttribute('data-i18n');
-                    el.textContent = t(key);
-                });
-
-                // Update placeholders
-                document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-                    const key = el.getAttribute('data-i18n-placeholder');
-                    el.placeholder = t(key);
-                });
-
-                // Update select value
-                const langSelect = document.getElementById('langSelect');
-                if (langSelect) langSelect.value = lang;
-
-                // Update HTML lang attribute
-                document.documentElement.lang = lang;
-            }
-
-            // Language switcher
-            const langSelect = document.getElementById('langSelect');
-            langSelect.addEventListener('change', (e) => {
-                updateLanguage(e.target.value);
+            // Update all elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach((el) => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
             });
 
-            // Initialize language
-            updateLanguage(currentLang);
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
 
-            // Snowflakes
-            const snowflakesContainer = document.getElementById('snowflakes');
-            const snowflakeChars = ['*', '+', '·'];
+            // Update select value
+            const langSelect = document.getElementById('langSelect');
+            if (langSelect) langSelect.value = lang;
 
-            for (let i = 0; i < 30; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                snowflake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
-                snowflake.style.left = Math.random() * 100 + '%';
-                snowflake.style.animationDuration = Math.random() * 10 + 10 + 's';
-                snowflake.style.animationDelay = Math.random() * 10 + 's';
-                snowflake.style.opacity = Math.random() * 0.5 + 0.2;
-                snowflake.style.fontSize = Math.random() * 10 + 8 + 'px';
-                snowflakesContainer.appendChild(snowflake);
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+        }
+
+        // Language switcher
+        const langSelect = document.getElementById('langSelect');
+        langSelect.addEventListener('change', (e) => {
+            updateLanguage(e.target.value);
+        });
+
+        // Initialize language
+        updateLanguage(currentLang);
+
+        // Snowflakes
+        const snowflakesContainer = document.getElementById('snowflakes');
+        const snowflakeChars = ['*', '+', '·'];
+
+        for (let i = 0; i < 30; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 10 + 10 + 's';
+            snowflake.style.animationDelay = Math.random() * 10 + 's';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.2;
+            snowflake.style.fontSize = Math.random() * 10 + 8 + 'px';
+            snowflakesContainer.appendChild(snowflake);
+        }
+
+        // Elements
+        const urlInput = document.getElementById('url');
+        const log = document.getElementById('log');
+        const player = document.getElementById('player');
+        const goBtn = document.getElementById('go');
+        const downloadLink = document.getElementById('downloadLink');
+        const preview = document.getElementById('preview');
+
+        // Download handler
+        goBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                log.textContent = t('error_url');
+                log.className = 'status error';
+                return;
             }
 
-            // Elements
-            const urlInput = document.getElementById('url');
-            const log = document.getElementById('log');
-            const player = document.getElementById('player');
-            const goBtn = document.getElementById('go');
-            const downloadLink = document.getElementById('downloadLink');
-            const preview = document.getElementById('preview');
+            log.innerHTML = '<div class="spinner"></div>&nbsp;&nbsp;' + t('downloading');
+            log.className = 'status';
+            player.removeAttribute('src');
+            downloadLink.classList.remove('visible');
+            preview.classList.remove('visible');
+            goBtn.disabled = true;
+            goBtn.innerHTML = '<div class="spinner"></div>&nbsp;&nbsp;' + t('processing');
 
-            // Download handler
-            goBtn.addEventListener('click', async () => {
-                const url = urlInput.value.trim();
+            try {
+                const resp = await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url }),
+                });
 
-                if (!url) {
-                    log.textContent = t('error_url');
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    log.textContent = data?.error || resp.statusText;
                     log.className = 'status error';
                     return;
                 }
 
-                log.innerHTML = '<div class="spinner"></div>&nbsp;&nbsp;' + t('downloading');
-                log.className = 'status';
-                player.removeAttribute('src');
-                downloadLink.classList.remove('visible');
-                preview.classList.remove('visible');
-                goBtn.disabled = true;
-                goBtn.innerHTML = '<div class="spinner"></div>&nbsp;&nbsp;' + t('processing');
+                const sourceInfo =
+                    data.source === 1
+                        ? ' (' + t('no_watermark') + ')'
+                        : data.delogoApplied
+                            ? ' (' + t('watermark_removed') + ')'
+                            : '';
+                log.textContent = data.filename + ' [' + data.size + ']' + sourceInfo;
+                log.className = 'status success';
 
-                try {
-                    const resp = await fetch('/download', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ url }),
-                    });
+                player.src = data.cleanUrl;
+                player.load();
+                preview.classList.add('visible');
 
-                    const data = await resp.json();
-
-                    if (!resp.ok) {
-                        log.textContent = data?.error || resp.statusText;
-                        log.className = 'status error';
-                        return;
-                    }
-
-                    const sourceInfo =
-                        data.source === 1
-                            ? ' (' + t('no_watermark') + ')'
-                            : data.delogoApplied
-                              ? ' (' + t('watermark_removed') + ')'
-                              : '';
-                    log.textContent = data.filename + ' [' + data.size + ']' + sourceInfo;
-                    log.className = 'status success';
-
-                    player.src = data.cleanUrl;
-                    player.load();
-                    preview.classList.add('visible');
-
-                    downloadLink.href = data.cleanUrl;
-                    downloadLink.download = data.filename;
-                    downloadLink.classList.add('visible');
-                } catch (e) {
-                    log.textContent = t('error_network') + ': ' + e.message;
-                    log.className = 'status error';
-                } finally {
-                    goBtn.disabled = false;
-                    goBtn.innerHTML = `
+                downloadLink.href = data.cleanUrl;
+                downloadLink.download = data.filename;
+                downloadLink.classList.add('visible');
+            } catch (e) {
+                log.textContent = t('error_network') + ': ' + e.message;
+                log.className = 'status error';
+            } finally {
+                goBtn.disabled = false;
+                goBtn.innerHTML = `
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           <span data-i18n="download">${t('download')}</span>
         `;
-                }
-            });
+            }
+        });
 
-            // Enter to download
-            urlInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') goBtn.click();
-            });
-        </script>
-    </body>
+        // Enter to download
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') goBtn.click();
+        });
+    </script>
+</body>
+
 </html>
